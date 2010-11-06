@@ -1,0 +1,11 @@
+Project Description: WMS Browser
+
+Context: In the interest of improving compatibility with existing infrastructure, GeoNode should allow "adding" or "subscribing" to a 3rd-party WMS service and providing a browser-accessible and human-readable presentation of the layers presented.  As a first step toward that goal, create a standalone service to translate WMS Capabilities to HTML.
+
+Details:
+    * Configuration: An administrator should need only to provide the URL to a WMS service or Capabilities document and allow the rest to be inferred from data available via OGC web services.
+    * Presentation: 
+          o The index page for the site will be a listing of all known layers, with appropriate navigation aids.
+          o Clicking on a layer link from the index page brings up a 'detail' page for the layer, presenting the layer's title and other metadata, as well as an interactive ('slippy') map to allow browsing through the contents of each layer.
+          o For non-raster layers, users should also be able to explore the attribute data associated with the geometries in a table. 
+          o Each layer should include instructions (code templates etc.) for integrating the layer into other services such as OpenLayers maps.
