@@ -1,11 +1,51 @@
-Project Description: WMS Browser
+Django WMS Browser
 
-Context: In the interest of improving compatibility with existing infrastructure, GeoNode should allow "adding" or "subscribing" to a 3rd-party WMS service and providing a browser-accessible and human-readable presentation of the layers presented.  As a first step toward that goal, create a standalone service to translate WMS Capabilities to HTML.
+Context: In the interest of improving compatibility with existing infrastructure, GeoNode should allow "adding" or "subscribing" to a 3rd-party WMS service and providing a browser-accessible and human-readable presentation of the layers presented.  As a first step toward that goal, is to create a standalone app/service to translate WMS Capabilities to HTML.
 
 Details:
-    * Configuration: An administrator should need only to provide the URL to a WMS service or Capabilities document and allow the rest to be inferred from data available via OGC web services.
-    * Presentation: 
-          o The index page for the site will be a listing of all known layers, with appropriate navigation aids.
-          o Clicking on a layer link from the index page brings up a 'detail' page for the layer, presenting the layer's title and other metadata, as well as an interactive ('slippy') map to allow browsing through the contents of each layer.
-          o For non-raster layers, users should also be able to explore the attribute data associated with the geometries in a table. 
-          o Each layer should include instructions (code templates etc.) for integrating the layer into other services such as OpenLayers maps.
+Configuration: An administrator should need only to provide the URL to a WMS service or Capabilities document and allow the rest to be inferred from data available via OGC web services.
+
+Presentation: 
+
+* The index page for the site will be a listing of all known layers, with appropriate navigation aids.
+* Clicking on a layer link from the index page brings up a 'detail' page for the layer, presenting the layer's title and other metadata, as well as an interactive ('slippy') map to allow browsing through the contents of each layer.
+* For non-raster layers, users should also be able to explore the attribute data associated with the geometries in a table. 
+* Each layer should include instructions (code templates etc.) for integrating the layer into other services such as OpenLayers maps.
+
+Prerequisites:
+
+* GeoDjango http://code.djangoproject.com/wiki/GeoDjango
+* Spatial Database (tested with PostgreSQL + PostGIS, assumed, but not tested, to work with MySQL and Oracle Spatial)
+* OWSLib http://trac.gispython.org/lab/wiki/OwsLib (using forked version wiht improvements here https://github.com/ortelius/OWSLib)
+* BeautifulSoup http://www.crummy.com/software/BeautifulSoup/
+
+General TODO: (in Priority Order)
+	Implement Basic Doctests Tests for Model Functions
+	Implement Unit Tests for Model Functions
+		WmsEndpoint.parse_wms_url
+		WmsLayer.generate_preview_image
+	Implement index view in wmsb.views
+	Implement index template
+		List all exiting layers -> Link to WmsLayer info view
+		Navigation/Paging
+		Form to add new endpoint/server (single form field for url)
+	Implement Endpoint/Server listing view in wmsb.views
+	Implement Endpont/Server listing template
+		List of all exisitng Endpoint/Servers -> Link to WmsEndpoint info view
+		Navigation/Paging
+		Form to add new endpoint/server (single form field for url)
+	Implement WmsEndpoint info/detail view in wmsb.views
+		List all layers for Endpoint/Server with preview image
+		OL Map with footprints for each layer?
+	Implement WmsLayer info/detail view in wmsb.vies
+	Implement WmsLayer template
+		List all layer metadata
+		List Layer Attributes (if available) in table.
+		OL Map with WMS Layer
+		Code Templaes for embedding
+			OpenLayers
+			Google Maps
+			Google Earth/KML?
+	Implement Endpoint/Server/Layer search
+		Keyword/Full Text
+		By BBOX
