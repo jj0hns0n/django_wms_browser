@@ -6,7 +6,7 @@ from owslib.wms import WebMapService
 from urllib import urlencode
 from BeautifulSoup import BeautifulSoup
 
-#TODO: Figure out why I cannot import owslib.util
+# TODO: Figure out why I cannot import owslib.util
 import sys
 sys.path.append('/usr/src/OWSLib/owslib')
 import util
@@ -27,7 +27,7 @@ class WmsEndpoint(models.Model):
 	version = models.CharField(max_length=10, null=True, blank=True)
 	#username # Should these be saved or requested every time?
 	#password
-	#TODO: Verify quantity against WMS spec, more than one allowed?
+	# TODO: Verify Service Contact Info against WMS spec, more than one allowed?
 	contact_person = models.CharField(max_length=255, null=True, blank=True)
 	contact_organization = models.CharField(max_length=255, null=True, blank=True)
 	contact_position = models.CharField(max_length=255, null=True, blank=True)
@@ -48,18 +48,19 @@ class WmsEndpoint(models.Model):
 		# TODO: Check for existing WMS record for same url
 		# If exists update it rather than creating new record
 		wms = WebMapService(url)
-		#TODO: save username/password?
+		# TODO: save username/password?
 		self.name = wms.identification.type
 		self.version = wms.identification.version
 		self.title = wms.identification.title
 		self.abstract = wms.identification.abstract
 		self.keywords = ','.join(wms.identification.keywords)
 		# Not Implemented by OWSLib 
-		# TODO: Add to OWSLib 	
+		# TODO: Add to OWSLib (access_constraings, fees)
 		#self.access_constraints = wms.identification.accessconstraints 
 		#self.fees = wms.identification.fees
 		self.online_resource = wms.provider.url
-		#TODO: ServiceProvider/ContactMetadata
+		# TODO: Save ServiceProvider/ContactMetadata
+		# TODO: Save SRSs for Service
 		self.save()
 		
 		for layer in list(wms.contents):
@@ -70,7 +71,7 @@ class WmsEndpoint(models.Model):
 			wmsl.keywords = ','.join(wms[layer].keywords)
 			wmsl.queryable = wms[layer].queryable
 			# Not Implemented by OWSLib 
-			# TODO: Implement in OWSLib	
+			# TODO: Implement in OWSLib (abstract, cascaded, opaque, no_subsets, fixed_width, fixed_height)
 			#wmsl.abstract = wms[layer].abstract 
 			#wmsl.cascaded
 			#wmsl.opaque
@@ -85,14 +86,15 @@ class WmsEndpoint(models.Model):
 				#Parent Layer?
 				continue
 			else:
-				#TODO: Move to bbox2poly function
+				# TODO: Move to bbox2poly function
+				# TODO: Test if bbox is valid for EPSG:4326
 				bboxpoly = Polygon(((bbox[0], bbox[3]), (bbox[2], bbox[3]), (bbox[2], bbox[1]), (bbox[0], bbox[1]), (bbox[0], bbox[3])))
 				wmsl.latlon_bbox_poly = bboxpoly
 				wmsl.latlon_bbox = bbox
 				wmsl.save()
 
-			#TODO: Save Styles
-			#TODO: Save SRSs for Layer
+			# TODO: Save Styles
+			# TODO: Save SRSs for Layer
 
 			wmsl.generate_preview_image()	
 	
@@ -146,12 +148,12 @@ CAPABILITY_CHOICES = (
 class WmsCapability(models.Model):
 	wms = models.ForeignKey(WmsEndpoint)
 	capability = models.CharField(max_length=2, choices=CAPABILITY_CHOICES)
-	#TODO: DCP Type
+	# TODO: Implement DCP Type
 	formats = models.ManyToManyField(OutputFormat)
 
-#TODO: Exceptions
-#TODO: VendorSpecificCapabilities
-#TODO: UserDefinedSymbolization
+# TODO: Implement Exceptions
+# TODO: Implement VendorSpecificCapabilities
+# TODO: Implement UserDefinedSymbolization
 
 class WmsLayer(models.Model):
 	wms = models.ForeignKey(WmsEndpoint)
@@ -159,7 +161,7 @@ class WmsLayer(models.Model):
 	name = models.CharField(max_length=255, null=True, blank=True)
 	abstract = models.TextField(null=True, blank=True)
 	keywords = models.TextField(null=True, blank=True)
-	#parent = models.ForeignKey(WmsLayer) #TODO: Parent Layer Inheritance
+	#parent = models.ForeignKey(WmsLayer) # TODO: Implement Parent Layer Inheritance
 	queryable = models.NullBooleanField()
 	cascaded = models.PositiveIntegerField(null=True, blank=True)
 	opaque = models.NullBooleanField()
@@ -188,7 +190,7 @@ class WmsLayer(models.Model):
 		img = wms.getmap(layers=[self.name],
 			srs='EPSG:4326',
 			bbox=self.latlon_bbox,
-			size=(300,250), # TODO: Calculate optimum size at this approx size
+			size=(300,250), # TODO: Calculate optimum size for preview image at this approx size
 			format='image/jpeg',
 			transparent=True)
 		out = open(('%s.jpg' % (self.name)), 'wb')
@@ -205,7 +207,7 @@ class WmsLayerField(models.Model):
 	position = models.PositiveIntegerField()
 	name = models.CharField(max_length=255, null=True, blank=True)
 	type = models.CharField(max_length=5, choices=FIELD_TYPE_CHOICES, null=True, blank=True)
-	#TODO: Max/Min/Range/Median/Mean/StdDev for numeric types
+	# TODO: Calculate Max/Min/Range/Median/Mean/StdDev for numeric types
 	def __unicode__(self):
 		return self.name
 
