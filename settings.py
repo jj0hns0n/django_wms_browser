@@ -12,9 +12,9 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'wms_browser',                      # Or path to database file if using sqlite3.
-        'USER': 'wms_admin',                      # Not used with sqlite3.
-        'PASSWORD': 'wm$@dm1n',                  # Not used with sqlite3.
+        'NAME': '',                      # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
@@ -94,3 +94,8 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'wmsb',
 )
+
+try:
+	from local_settings import *
+except ImportError:
+	pass
