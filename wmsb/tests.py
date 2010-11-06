@@ -1,23 +1,39 @@
-"""
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
-
-Replace these with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
+from django_wms_browser.wmsb.models import WmsEndpoint, OutputFormat, WmsCapability, WmsLayer, WmsLayerField, LayerAttribution, WmsStyle 
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
+class WmsTest(TestCase):
+	def setUp(self):
+		pass
 
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+	def tearDown(self):
+		pass
 
->>> 1 + 1 == 2
-True
-"""}
+	def test_parse_save_wms_url(self):
+		self.assertTrue(False)
+	
+	def test_parse_save_wms_layers(self):
+		self.assertTrue(False)
 
+	def test_parse_save_styles(self):
+		self.assertTrue(False)
+
+	def test_generate_preview_image(self):
+		self.assertTrue(False)
+
+	def test_retrieve_layer_attributes(self):
+		self.assertTrue(False)
+
+	def test_valid_latlon_bbox(self):
+		self.assertTrue(False)
+
+	def test_pars_save_output_formats(self):
+		self.assertTrue(False)
+
+	def test_parse_save_capabilities(self):
+		self.assertTrue(False)
+		
+	def test_parse_save_layer_attribution(self):
+		self.assertTrue(False)
+
+	def test_parse_save_style(self):
+		self.assertTrue(False)
