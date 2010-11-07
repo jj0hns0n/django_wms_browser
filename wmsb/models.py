@@ -87,7 +87,7 @@ class WmsEndpoint(models.Model):
 			# TODO: Save ServiceProvider/ContactMetadata
 			# TODO: Save SRSs for Service
 			self.save()
-			#self.parse_save_wms_layers(wms)
+			self.parse_save_wms_layers(wms)
 			msg = "%s parsed successfully" % (url)
 			return wms, msg
 		except owslib.wms.ServiceException:
