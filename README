@@ -49,3 +49,5 @@ General TODO: (in Priority Order)
 	Implement Endpoint/Server/Layer search
 		Keyword/Full Text
 		By BBOX
+
+	Customize Admin for WmsLayer to include WMS in OL Map
