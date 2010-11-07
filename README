@@ -18,6 +18,7 @@ Prerequisites:
 * Spatial Database (tested with PostgreSQL + PostGIS, assumed, but not tested, to work with MySQL and Oracle Spatial)
 * OWSLib http://trac.gispython.org/lab/wiki/OwsLib (using forked version wiht improvements here https://github.com/ortelius/OWSLib)
 * BeautifulSoup http://www.crummy.com/software/BeautifulSoup/
+* olwidget http://github.com/yourcelf/olwidget
 
 General TODO: (in Priority Order)
 	Implement Basic Doctests Tests for Model Functions
