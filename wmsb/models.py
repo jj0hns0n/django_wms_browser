@@ -1,9 +1,15 @@
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Polygon
 
+import owslib
 from owslib.wms import WebMapService
 
 from urllib import urlencode
+import urllib2
+from xml.parsers.expat import ExpatError
+
+import traceback
+
 from BeautifulSoup import BeautifulSoup
 
 # TODO: Figure out why I cannot import owslib.util
@@ -11,9 +17,27 @@ import sys
 sys.path.append('/usr/src/OWSLib/owslib')
 import util
 
+CAPABILITY_CHOICES = (
+	('gc', 'GetCapabilities'),
+	('gm', 'GetMap'),
+	('gf', 'GetFeatureInfo'),
+	('dl', 'DescribeLayer'),
+	('gl', 'GetLegendGraphic'),
+	('gs', 'GetStyles'),
+	('ps', 'PutStyles'))
+
+FIELD_TYPE_CHOICES = (
+	('text', 'Text'),
+	('int', 'Integer'),
+	('dec', 'Decimal'))
+
+def bbox_to_polygon(bbox):
+	return Polygon(((bbox[0], bbox[3]), (bbox[2], bbox[3]), (bbox[2], bbox[1]), (bbox[0], bbox[1]), (bbox[0], bbox[3])))
+
 # ********************************************
 # TODO: Verify ALL entities against WMS Spec
 #       and DTD and modify model accordingly
+# http://www.opengeospatial.org/standards/wms
 # ********************************************
 
 class WmsEndpoint(models.Model):
@@ -44,25 +68,54 @@ class WmsEndpoint(models.Model):
 	def __unicode__(self):
 		return self.title
 
-	def parse_wms_url(self, url, username=None, password=None):
-		# TODO: Check for existing WMS record for same url
-		# If exists update it rather than creating new record
-		wms = WebMapService(url)
-		# TODO: save username/password?
-		self.name = wms.identification.type
-		self.version = wms.identification.version
-		self.title = wms.identification.title
-		self.abstract = wms.identification.abstract
-		self.keywords = ','.join(wms.identification.keywords)
-		# Not Implemented by OWSLib 
-		# TODO: Add to OWSLib (access_constraings, fees)
-		#self.access_constraints = wms.identification.accessconstraints 
-		#self.fees = wms.identification.fees
-		self.online_resource = wms.provider.url
-		# TODO: Save ServiceProvider/ContactMetadata
-		# TODO: Save SRSs for Service
-		self.save()
-		
+	def parse_save_wms_url(self, url, username=None, password=None):
+		try:
+			# TODO: Check for existing WMS record for same url
+			# If exists update it rather than creating new record
+			wms = WebMapService(url)
+			# TODO: save username/password?
+			self.name = wms.identification.type
+			self.version = wms.identification.version
+			self.title = wms.identification.title
+			self.abstract = wms.identification.abstract
+			self.keywords = ','.join(wms.identification.keywords)
+			# Not Implemented by OWSLib 
+			# TODO: Add to OWSLib (access_constraings, fees)
+			#self.access_constraints = wms.identification.accessconstraints 
+			#self.fees = wms.identification.fees
+			self.online_resource = wms.provider.url
+			# TODO: Save ServiceProvider/ContactMetadata
+			# TODO: Save SRSs for Service
+			self.save()
+			#self.parse_save_wms_layers(wms)
+			msg = "%s parsed successfully" % (url)
+			return wms, msg
+		except owslib.wms.ServiceException:
+			msg = "WMS Service Exception with %s" % (url)
+			return msg, None
+		except owslib.util.ServiceException:
+			msg = "WMS Service Exception with %s" % (url)
+			return msg, None
+		except urllib2.HTTPError:
+			msg = "%s is not a valid URL (404)" % (url)
+			return None, msg
+		except urllib2.URLError:
+			msg = "URLError with %s" % (url)
+			return None, msg
+		except ExpatError:
+			msg = "XML Parsing Exception with %s" % (url)
+			return None, msg
+		except TypeError:
+			msg = "TypeError with %s" % (url)
+			return None, msg
+		except AttributeError:
+			msg = "AttributeError with %s" % (url)
+			return None, msg
+		except:
+			msg = "Unhandled Exception with %s" % (url)
+			return None, msg
+	
+	def parse_save_wms_layers(self, wms):	
 		for layer in list(wms.contents):
 			wmsl = WmsLayer()
 			wmsl.wms = self 
@@ -83,67 +136,62 @@ class WmsEndpoint(models.Model):
 			# TODO: Save Native SRS and BBOX
 			bbox = wms[layer].boundingBoxWGS84
 			if(bbox == None):
-				#Parent Layer?
+				# Parent Layer?
 				continue
 			else:
-				# TODO: Move to bbox2poly function
 				# TODO: Test if bbox is valid for EPSG:4326
-				bboxpoly = Polygon(((bbox[0], bbox[3]), (bbox[2], bbox[3]), (bbox[2], bbox[1]), (bbox[0], bbox[1]), (bbox[0], bbox[3])))
-				wmsl.latlon_bbox_poly = bboxpoly
+				wmsl.latlon_bbox_poly = bbox_to_polygon(bbox)
 				wmsl.latlon_bbox = bbox
 				wmsl.save()
+			self.parse_save_layer_attributes(wms, wmsl)
+			
+	def parse_save_layer_styles():
+		# TODO: Save Styles
+		pass
 
-			# TODO: Save Styles
-			# TODO: Save SRSs for Layer
+	def parse_save_layer_srs():
+		# TODO: Save SRSs for Layer
+		pass
 
-			wmsl.generate_preview_image()	
-	
-			# This is a dirty ugly hack :( the WMS Specification does *not* require 
-			# that servers provide a way to query a layer for its features attributes.
-			# nor require that the output of GetFeatureInfo be in a 'standard format'
-			# So various server implementations do it differently.
-			# This is using the text/html output which *most* servers support
-			# The response is parsed by BeautifulSoup and the columns derived
-			# Tested against geoserver and esri WMS implementations
-			# TODO: Needs Further Testing, and discusion of alternatives needed
-			# TODO: Derive Max/Min/Mean/Median/StdDev by requesting all records?? 
+	def parse_save_layer_attributes(self, wms, layer):
+		# This is a dirty ugly hack :( the WMS Specification does *not* require 
+		# that servers provide a way to query a layer for its features attributes.
+		# nor require that the output of GetFeatureInfo be in a 'standard format'
+		# So various server implementations do it differently.
+		# This is using the text/html output which *most* servers support
+		# The response is parsed by BeautifulSoup and the columns derived
+		# Tested against geoserver and esri WMS implementations
+		# TODO: Needs Further Testing, and discusion of alternatives needed
+		# TODO: Derive Max/Min/Mean/Median/StdDev by requesting all records?? 
 
-			if(wms[layer].queryable):
-				base_url = wms.getOperationByName('GetFeatureInfo').methods['Get']['url']
-				request = {'version': wms.version, 'request': 'GetFeatureInfo'}
-				request['bbox'] = ','.join([str(x) for x in bbox])
-				request['LAYERS'] = layer
-				request['QUERY_LAYERS'] = layer
-				request['feature_count'] = 1 # Get only the first Feature
-				request['width'] = 1 # Get a 1x1 Image
-				request['height'] = 1
-				request['srs'] = 'EPSG:4326'
-				request['info_format'] = 'text/html'
-				request['x'] = 1 # Query the 1x1 image
-				request['y'] = 1
+		if(layer.queryable):
+			base_url = wms.getOperationByName('GetFeatureInfo').methods['Get']['url']
+			request = {'version': wms.version, 'request': 'GetFeatureInfo'}
+			request['bbox'] = ','.join([str(x) for x in layer.latlon_bbox])
+			request['LAYERS'] = layer
+			request['QUERY_LAYERS'] = layer
+			request['feature_count'] = 1 # Get only the first Feature
+			request['width'] = 1 # Get a 1x1 Image
+			request['height'] = 1
+			request['srs'] = 'EPSG:4326'
+			request['info_format'] = 'text/html'
+			request['x'] = 1 # Query the 1x1 image
+			request['y'] = 1 # At 1x1 (effectively the whole thing)
 
-				data = urlencode(request)
-				u = util.openURL(url, data)
-				soup = BeautifulSoup(u)
-				count = 0
-				for field in soup.findAll('th'):
-					if(field.string == None):
-						field_name = field.contents[0].string
-					else:
-						field_name = field.string
-					WmsLayerField(wms_layer=wmsl, position = count, name=unicode(field_name)).save()
+			data = urlencode(request)
+			u = util.openURL(layer.wms.online_resource, data)
+			soup = BeautifulSoup(u)
+			count = 0
+			for field in soup.findAll('th'):
+				if(field.string == None):
+					field_name = field.contents[0].string
+				else:
+					field_name = field.string
+				WmsLayerField(wms_layer=layer, position = count, name=unicode(field_name)).save()
 
 class OutputFormat(models.Model):
 	format = models.CharField(max_length=255, null=True, blank=True)
 
-CAPABILITY_CHOICES = (
-	('gc', 'GetCapabilities'),
-	('gm', 'GetMap'),
-	('gf', 'GetFeatureInfo'),
-	('dl', 'DescribeLayer'),
-	('gl', 'GetLegendGraphic'),
-	('gs', 'GetStyles'),
-	('ps', 'PutStyles'))
 
 class WmsCapability(models.Model):
 	wms = models.ForeignKey(WmsEndpoint)
@@ -197,10 +245,6 @@ class WmsLayer(models.Model):
 		out.write(img.read())
 		out.close()
 
-FIELD_TYPE_CHOICES = (
-	('text', 'Text'),
-	('int', 'Integer'),
-	('dec', 'Decimal'))
 
 class WmsLayerField(models.Model):
 	wms_layer = models.ForeignKey(WmsLayer)
