@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
+<head><title>WMS Browser - {% block title %}{% endblock %}</title>
+{% block extra_head %}
+{% endblock %}
+</head>
+<body>
+{% block body %}
+<div id="container">
+	<div id="header">
+		<ul id='menu'>
+			<li>Home</li>
+			<li>WMS Servers</li>
+			<li>WMS Layers</li>
+			<li>Search</li>
+			<li>About</li>
+		</ul>
+	</div>
+	<div id="content">
+	{% block content %}
+	{% endblock %}
+	</div>
+	<div id="footer">
+	<hr> WMS Browser</hr>
+	</div>
+</div>
+{% endblock %}
+</body>
+</html>

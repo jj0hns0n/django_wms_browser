@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+<center><h2>Latest Layers</h2></center>
+{% for layer in layer_list.object_list  %}
+<a href='/wmsb/wms_layer/{{ layer.id }}'>{{ layer.title }}</a><br/>
+{% endfor %}
+<br/>
+<div class="pagination">
+    <span class="step-links">
+        {% if layer_list.has_previous %}
+            <a href="?page={{ layer_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ layer_list.number }} of {{ layer_list.paginator.num_pages }}.
+        </span>
+
+        {% if layer_list.has_next %}
+            <a href="?page={{ layer_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends "site_base.html" %}
+{% block title %}{{ layer.name }}{% endblock %}
+{% block extra_head %}{{ map.media }}{% endblock %}
+{% block content %}
+<center><h2>{{ layer.title }}</h2></center>
+
+{{ map }}
+{% endblock %}
