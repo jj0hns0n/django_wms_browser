@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-us" xml:lang="en-us" >
 <head><title>WMS Browser - {% block title %}{% endblock %}</title>
+<link rel="stylesheet" media="all" href="/media/css/base_style.css" />
 {% block extra_head %}
 {% endblock %}
 </head>
@@ -8,12 +9,25 @@
 {% block body %}
 <div id="container">
 	<div id="header">
+		<div id='authentication'>
+		{% if user.is_authenticated %}
+			Logged In as {{ user.username }}&nbsp;&nbsp;
+			{% if user.is_staff %}
+				<a href='/admin/'>Admin</a>&nbsp;&nbsp;	
+			{% endif %}
+			<a href='/accounts/logout'>Logout</a>	
+			
+    		{% else %}
+   	 		<a href='/accounts/login/?next=/'>Login</a>	
+    		{% endif %}
+		</div>
+		<h2><a href="/">WMS Browser</a></h2>
 		<ul id='menu'>
-			<li>Home</li>
-			<li>WMS Servers</li>
-			<li>WMS Layers</li>
-			<li>Search</li>
-			<li>About</li>
+			<li><a href='/'>Home</a></li>
+			<li><a href='/wmsb/servers/'>Servers</a></li>
+			<li><a href='/wmsb/layers/'>Layers</a></li>
+			<li><a href='/wmsb/search/'>Search</a></li>
+			<li><a href='/wmsb/about/'>About</a></li>
 		</ul>
 	</div>
 	<div id="content">
@@ -21,7 +35,7 @@
 	{% endblock %}
 	</div>
 	<div id="footer">
-	<hr> WMS Browser</hr>
+	<hr> <center>WMS Browser</center></hr>
 	</div>
 </div>
 {% endblock %}
