@@ -4,7 +4,22 @@
 {% block content %}
 <center><h2>{{ layer.title }}</h2></center>
 
+<h3>Layer Metadata</h3>
+TODO
+
+<h3>Layer Preview</h3>
 {{ map }}
+
+<div id='layer_fields'>
+<h3>Layer Fields/Attributes</h3>
+<table border='1' id='layer_fields_table'>
+<tr><th>Field Name</th><th>Type</th></tr>
+{% for field in fields %}
+<tr><td>{{ field.name }}</td><td>{{ field.type }}</td></tr>
+{% endfor %}
+</table>
+</div>
+
 <script type="text/javascript" defer=True>
 	var wmsLayer = new OpenLayers.Layer.WMS("{{layer.title}}",
 				"{{layer.wms.online_resource}}",

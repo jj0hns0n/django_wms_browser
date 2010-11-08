@@ -1,0 +1,11 @@
+{% extends "site_base.html" %}
+{% block title %}{{ server.title }}{% endblock %}
+{% block content %}
+<center><h2>{{ server.title }}</h2></center>
+<h3>Server Metadata</h3>
+TODO
+<h3>Server Layers</h3>
+{% for layer in layer_list  %}
+<a href='/wmsb/layer/{{ layer.id }}'>{{ layer.title }}</a><br/>
+{% endfor %}
+{% endblock %}

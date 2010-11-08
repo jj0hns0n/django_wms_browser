@@ -1,9 +1,19 @@
 {% extends "site_base.html" %}
 {% block title %}Welcome{% endblock %}
 {% block content %}
+
+{% if user.is_authenticated %}
+<h2>Register New Layer</h2>
+<form id='register_url_form' method='post' action='/wmsb/register_url/'>
+{% csrf_token %}
+{{ register_form }}
+<input type='submit' value='Register'>
+</form>
+{% endif %}
+
 <center><h2>Latest Layers</h2></center>
 {% for layer in layer_list.object_list  %}
-<a href='/wmsb/wms_layer/{{ layer.id }}'>{{ layer.title }}</a><br/>
+<a href='/wmsb/layer/{{ layer.id }}'>{{ layer.title }}</a><br/>
 {% endfor %}
 <br/>
 <div class="pagination">

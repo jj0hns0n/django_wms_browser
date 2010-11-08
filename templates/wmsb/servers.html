@@ -1,0 +1,34 @@
+{% extends "site_base.html" %}
+{% block title %}WMS Servers{% endblock %}
+{% block content %}
+
+{% if user.is_authenticated %}
+<h2>Register New Layer</h2>
+<form id='register_url_form' method='post' action='/wmsb/register_url/'>
+{% csrf_token %}
+{{ register_form }}
+<input type='submit' value='Register'>
+</form>
+{% endif %}
+
+<center><h2>WMS Servers</h2></center>
+{% for server in server_list.object_list  %}
+<a href='/wmsb/server/{{ server.id }}'>{{ server.title }}</a><br/>
+{% endfor %}
+<br/>
+<div class="pagination">
+    <span class="step-links">
+        {% if server_list.has_previous %}
+            <a href="?page={{ server_list.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ server_list.number }} of {{ server_list.paginator.num_pages }}.
+        </span>
+
+        {% if server_list.has_next %}
+            <a href="?page={{ server_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}
