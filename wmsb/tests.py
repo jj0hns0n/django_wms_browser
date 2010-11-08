@@ -69,7 +69,7 @@ class WmsTest(TestCase):
 	def test_valid_latlon_bbox(self):
 		self.assertTrue(False)
 
-	def test_pars_save_output_formats(self):
+	def test_parse_save_output_formats(self):
 		self.assertTrue(False)
 
 	def test_parse_save_capabilities(self):
