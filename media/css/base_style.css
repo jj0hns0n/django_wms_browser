@@ -1,0 +1,46 @@
+*{margin:0;padding:0;font:1.0em Arial, Helvetica, sans-serif;line-height:2.0em}
+body{background:#222}
+a img{border:0}
+#container{margin:0 5%;background:#FFF;min-width:950px}
+#header{position:relative;height:70px;border-bottom:5px solid #444}
+#header img{width:70px}
+#menu{margin:0 0 0 120px;position:absolute;top:40px;right:15px}
+#menu li{list-style:none;float:left;line-height:1.0em;margin-right:1px}
+#menu li a{background:url('/media/img/tabs.png');height:30px;line-height:30px;width:128px;display:block;text-align:center;text-decoration:none;color:#FFF;font-weight:900}
+#menu li a.selected,#menu li a:hover{background-position:bottom}
+#content{padding:30px}
+a{color:#C00}
+a:hover{color:#F00}
+h1{font-size:1.4em;line-height:2.2em;background:#222;color:#FFF;text-indent:20px;margin:0 -15px}
+p,form{margin:10px 0}
+form{position:relative}
+form div{background:#EEE;margin:0 0 1px;padding:10px;position:relative}
+label{display:block;float:left;width:200px;font-size:0.9em}
+input,select,textarea{padding:0 5px;line-height:2.0em;height:2.0em;width:250px;border:1px solid #CCC;font-size:0.9em}
+.hospital-select{width:100%;}
+#authentication{float:right;padding-right:20px;}
+select{padding:0}
+option{padding:5px;font-size:0.9em}
+input:focus,select:focus,textarea:focus{background:#FFC;border:1px solid #3F0}
+input.radio{width:10px;border:0}
+textarea{height:150px}
+div.submit{position:absolute;right:5px;bottom:10px}
+div.submit input,div.submit input:focus{width:150px;border:1px solid #222;background:#FFF}
+div.submit input:hover{background:#0C0}
+#footer{padding:0 0 20px;clear:both;}
+#footer *{font-size:0.9em}
+#footer p{text-align:center}
+#leftcontainer {width:49%;float:left;}
+#rightcontainer {width:49%;float:right;}
+.slider { float: left; position: relative; margin: 5px; width: 100%; height: 100%; background-color: #ffffff; }
+.custom_message { float: left; position: relative; margin: 25px; width: 90%; height: 60px; background-color: #ffffff;}
+#custom_message_area { display:none;}
+button{width:150px;border:1px solid #222;background:#F0F0F0;padding:4px;margin:4px;}
+h2{font-size:1em;line-height:2.0em;background:#222;color:#FFF;text-indent:20px;margin:5px;}
+#header h2{float:left;background:none;font-size:2.5em;margin:0px;padding:0px;}
+#header a{color:#000;text-decoration:none;}
+table {border:none;}
+th {text-align:left;}
+td {padding:2px;border:none;}
+.status-td {padding:2px;border:none; width:200px; height:12px;}
+.error {color: #D8000C;background-color: #FFBABA;background-image: url('error.png');}
