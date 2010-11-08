@@ -25,7 +25,7 @@ def layer(request, layer_id):
 	layer = get_object_or_404(WmsLayer, pk=layer_id)
 	
 	if(layer.latlon_bbox_poly):
-		map = MapDisplay(fields=[layer.latlon_bbox_poly], options={'default_zoom': 10}) # TODO: Need to zoom to extent
+		map = MapDisplay(fields=[layer.latlon_bbox_poly], options={'overlay_style': {'fill_opacity': 0.0},}) 
 	else:
 		map = None
 	return render_to_response('wmsb/wms_layer.html', { 'layer' : layer, 'map' : map }, context_instance=RequestContext(request))
