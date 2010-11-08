@@ -1,8 +1,17 @@
 {% extends "site_base.html" %}
-{% block title %}{{ layer.name }}{% endblock %}
+{% block title %}{{ layer.title }}{% endblock %}
 {% block extra_head %}{{ map.media }}{% endblock %}
 {% block content %}
 <center><h2>{{ layer.title }}</h2></center>
 
 {{ map }}
+<script type="text/javascript" defer=True>
+	var wmsLayer = new OpenLayers.Layer.WMS("{{layer.title}}",
+				"{{layer.wms.online_resource}}",
+				{layers: "{{layer.name}}", transparent: true},
+				{isBaseLayer : false, isVisible: true});
+	map.addLayer(wmsLayer);
+	map.controls[0].redraw();
+	console.log(map);
+</script>
 {% endblock %}
